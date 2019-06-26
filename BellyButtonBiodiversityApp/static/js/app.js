@@ -11,7 +11,7 @@ function buildMetadata(sample) {
         // tags for each key-value in the metadata.
         Object.entries(data).forEach(([key, value]) => {
             metadataSelector
-                .append('p').text(`${key} : ${value}`)
+                .append('p').html(`${key} : ${value}`)
                 .append('hr')
         });
         // BONUS: Build the Gauge Chart
@@ -22,7 +22,7 @@ function buildMetadata(sample) {
 function buildCharts(sample) {
 
     // @TODO: Use `d3.json` to fetch the sample data for the plots
-    var url = '/samples/<sample>';
+    var url = "/samples/" + sample;
     d3.json(url).then(function (response) {
         console.log(response);
 
@@ -43,7 +43,7 @@ function buildCharts(sample) {
                 height: 400,
                 width: 500
             };
-            Plotly.newPlot('pie', data, layout, { responsive: true });
+            Plotly.newPlot('pie', data, layout);
         }
 
         // @TODO: Build a Bubble Chart using the sample data
@@ -56,7 +56,7 @@ function buildCharts(sample) {
                     size: response.sample_values,
                     color: response.otu_ids
                 },
-                text: data.otu_labels
+                text: response.otu_labels
             }];
 
             var layout = {
@@ -68,11 +68,11 @@ function buildCharts(sample) {
                 paper_bgcolor: 'rgba(0,0,0,0)',
             };
 
-            Plotly.newPlot('bubble', traceBubble, layout, { responsive: true })
+            Plotly.newPlot('bubble', traceBubble, layout);
         }
 
-        buildPie(sample);
-        buildBubble(sample);
+        buildPie(response);
+        buildBubble(response);
 
     })
 }

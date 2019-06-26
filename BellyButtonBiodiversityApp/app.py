@@ -17,7 +17,7 @@ app = Flask(__name__)
 #################################################
 # Database Setup
 #################################################
-
+app.config["SQLALCHEMY_TRACK_MODIFICATION"] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db/bellybutton.sqlite"
 db = SQLAlchemy(app)
 
@@ -78,7 +78,6 @@ def sample_metadata(sample):
     print(sample_metadata)
     return jsonify(sample_metadata)
 
-
 @app.route("/samples/<sample>")
 def samples(sample):
     """Return `otu_ids`, `otu_labels`,and `sample_values`."""
@@ -87,15 +86,15 @@ def samples(sample):
 
     # Filter the data based on the sample number and
     # only keep rows with values above 1
-    sample_data = df.loc[df[sample] > 1, ["otu_id", "otu_label", sample]]
+    sample_data = df.loc[df[sample] > 1, ["otu_id", "otu_label", sample]].sort_values(by=sample, ascending=False)
     # Format the data to send as json
     data = {
         "otu_ids": sample_data.otu_id.values.tolist(),
         "sample_values": sample_data[sample].values.tolist(),
         "otu_labels": sample_data.otu_label.tolist(),
     }
-    return jsonify(data)
 
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run()
